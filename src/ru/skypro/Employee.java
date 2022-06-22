@@ -1,5 +1,7 @@
 package ru.skypro;
 
+import java.util.Objects;
+
 public class Employee {
     private final String fullName;
     private int department;
@@ -39,4 +41,5 @@ public class Employee {
         return "ФИО сотрудника: " + fullName + " Зарплата сотрудника: " + salary +
                 " Номер отдела: " + department + " Идентификационный номер: " + id;
     }
+
 }
