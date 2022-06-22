@@ -6,7 +6,7 @@ public class Main {
     public static void main(String[] args) {
         employees[0] = new Employee("Сергеев Иван Семенович", 1, 8500);
         employees[1] = new Employee("Иванов Виктор Иванович", 2, 65000);
-        employees[2] = new Employee("Чайка Егор Алексеевич", 3, 45000);
+        employees[2] = new Employee("Чайка Егор Алексеевич", 2, 45000);
         employees[3] = new Employee("Матвеюк Иван Григорьевич", 3, 95000);
         employees[4] = new Employee("Рыбаков Сергей Борисович", 5, 100000);
         employees[5] = new Employee("Лесин Юрий Викторович", 4, 90000);
@@ -150,18 +150,25 @@ public class Main {
         }
     }
 
+    private static boolean isDepartmentExist(int department) {
+        return department >= 1 && department <= 5;
+    }
+
     private static Employee getEmployeeWithMinSalary(int department) {
+
         Employee employee = null;
-        if (employees.length > 0) {
+        if (employees.length > 0 && isDepartmentExist(department)) {
             for (Employee emp : employees) {
-                if (emp.getDepartment() == department) {
+                if (emp != null && emp.getDepartment() == department) {
                     employee = emp;
                     break;
                 }
             }
-            for (Employee emp : employees) {
-                if (emp != null && emp.getDepartment() == department && emp.getSalary() < employee.getSalary()) {
-                    employee = emp;
+            if (employee != null) {
+                for (Employee emp : employees) {
+                    if (emp != null && emp.getDepartment() == department && emp.getSalary() < employee.getSalary()) {
+                        employee = emp;
+                    }
                 }
             }
         }
@@ -178,16 +185,18 @@ public class Main {
 
     private static Employee getEmployeeWithMaxSalary(int department) {
         Employee employee = null;
-        if (employees.length > 0) {
+        if (employees.length > 0 && isDepartmentExist(department)) {
             for (Employee emp : employees) {
-                if (emp.getDepartment() == department) {
+                if (emp != null && emp.getDepartment() == department) {
                     employee = emp;
                     break;
                 }
             }
-            for (Employee emp : employees) {
-                if (emp != null && emp.getDepartment() == department && emp.getSalary() > employee.getSalary()) {
-                    employee = emp;
+            if (employee != null) {
+                for (Employee emp : employees) {
+                    if (emp != null && emp.getDepartment() == department && emp.getSalary() > employee.getSalary()) {
+                        employee = emp;
+                    }
                 }
             }
         }
@@ -197,16 +206,19 @@ public class Main {
     private static void printEmployeeWithMaxSalary(int department) {
         Employee employee = getEmployeeWithMaxSalary(department);
         if (employee != null) {
-            System.out.println("Максимальная зарплата в отделе " + employee.getDepartment() + " у сотрудника: " + employee.getFullName() +
-                    ". Зарплата: " + employee.getSalary() + ". Идентификационный номер: " + employee.getId());
+            System.out.println("Максимальная зарплата в отделе " + employee.getDepartment() +
+                    " у сотрудника: " + employee.getFullName() + ". Зарплата: " + employee.getSalary() +
+                    ". Идентификационный номер: " + employee.getId());
         }
     }
 
     private static int getStaffSalary(int department) {
         int sum = 0;
-        for (Employee employee : employees) {
-            if (employee != null && employee.getDepartment() == department) {
-                sum += employee.getSalary();
+        if (isDepartmentExist(department)) {
+            for (Employee employee : employees) {
+                if (employee != null && employee.getDepartment() == department) {
+                    sum += employee.getSalary();
+                }
             }
         }
         return sum;
@@ -217,14 +229,18 @@ public class Main {
     }
 
     private static double getAverageSalary(int department) {
-        if (employees.length > 0) {
+        if (employees.length > 0 && isDepartmentExist(department)) {
             int numberOfEmployees = 0;
             for (Employee emp : employees) {
                 if (emp != null && emp.getDepartment() == department) {
                     numberOfEmployees++;
                 }
             }
-            return (double) getStaffSalary(department) / numberOfEmployees;
+            if (numberOfEmployees != 0) {
+                return (double) getStaffSalary(department) / numberOfEmployees;
+            } else {
+                return 0.0;
+            }
         } else {
             return 0.0;
         }
@@ -236,7 +252,7 @@ public class Main {
     }
 
     private static void raiseStaffSalary(int department, int valueInPercentage) {
-        if (employees.length > 0) {
+        if (employees.length > 0 && isDepartmentExist(department)) {
             for (Employee emp : employees) {
                 if (emp != null && emp.getDepartment() == department) {
                     emp.setSalary((int) (emp.getSalary() * (1 + valueInPercentage / 100.0)));
@@ -247,7 +263,7 @@ public class Main {
 
     private static void printStaffFullNames(int department) {
 
-        if (employees.length > 0) {
+        if (employees.length > 0 && isDepartmentExist(department)) {
             for (Employee emp : employees) {
                 if (emp != null && emp.getDepartment() == department) {
                     System.out.println("Сотрудник отдела: " + emp.getFullName() +
@@ -258,11 +274,18 @@ public class Main {
     }
 
     private static Employee[] getEmployeesWhichSalaryLessThanValue(int salaryValue) {
-        Employee[] employeesArr = new Employee[employees.length];
-        int i = 0;
+        Employee[] employeesArr;
+        int count = 0;
         for (Employee emp : employees) {
             if (emp != null && emp.getSalary() < salaryValue) {
-                employeesArr[i++] = emp;
+                count++;
+            }
+        }
+        employeesArr = new Employee[count];
+        count = 0;
+        for (Employee emp : employees) {
+            if (emp != null && emp.getSalary() < salaryValue) {
+                employeesArr[count++] = emp;
             }
         }
         return employeesArr;
@@ -279,11 +302,19 @@ public class Main {
     }
 
     private static Employee[] getEmployeesWhichSalaryMoreThanValue(int salaryValue) {
-        Employee[] employeesArr = new Employee[employees.length];
-        int i = 0;
+        Employee[] employeesArr;
+        int count = 0;
+
         for (Employee emp : employees) {
             if (emp != null && emp.getSalary() >= salaryValue) {
-                employeesArr[i++] = emp;
+                count++;
+            }
+        }
+        employeesArr = new Employee[count];
+        count = 0;
+        for (Employee emp : employees) {
+            if (emp != null && emp.getSalary() >= salaryValue) {
+                employeesArr[count++] = emp;
             }
         }
         return employeesArr;
