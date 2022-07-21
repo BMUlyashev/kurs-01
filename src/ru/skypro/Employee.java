@@ -1,5 +1,7 @@
 package ru.skypro;
 
+import java.util.Objects;
+
 public class Employee {
     private final String fullName;
     private int department;
@@ -20,8 +22,12 @@ public class Employee {
     public int getId() {return id;}
     public int getCounter() {return counter;}
 
+    public static boolean isDepartmentExist(int department) {
+        return department >= 1 && department <= 5;
+    }
+
     public void setDepartment(int department) {
-        if (department < 1 || department > 5) {
+        if (!isDepartmentExist(department)) {
             throw new IllegalArgumentException("Отдел сотрудника должен быть от 1 до 5.");
         }
         this.department = department;
@@ -38,5 +44,18 @@ public class Employee {
     public String toString() {
         return "ФИО сотрудника: " + fullName + " Зарплата сотрудника: " + salary +
                 " Номер отдела: " + department + " Идентификационный номер: " + id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return Objects.equals(fullName, employee.fullName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fullName);
     }
 }
